@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="back-button">
+        <a href="{% url 'game_list' %}">
+            <svg width="48" height="48" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.008 10.996L2.004 7.992l5.004-2.996v1.997h6.996v1.998H7.008v2.005z" fill="#fff"></path>
+            </svg>
+        </a>
+        <h2 class="game-title">{{ game.title }}</h2>
+        <a href="{% url 'add_to_library' game.id %}" class="add-to-library-button">Добавить в библиотеку</a>
+    </div>
+
+    <div class="game-details">
+        <div class="game-info">
+            <div class="game-image-text flex-container"> 
+                <img src="{{ game.image.url }}" alt="{{ game.title }}" class="game-image">
+                <div class="game-description">
+                    <p>{{ game.description }}</p>  
+                    <p><strong>Дата выхода:</strong> {{ game.release_date }}</p>
+                    <p><strong>Жанр:</strong> {{ game.genre }}</p>
+                    <p><strong>Разработчик:</strong> {{ game.developer }}</p>
+                    <p><strong>Издатель:</strong> {{ game.publisher }}</p>
+                    <p><strong>Платформа:</strong> {{ game.platform }}</p>
+                    <p><strong>Тип издания:</strong> {{ game.edition }}</p>
+                </div> 
+            </div>
+            <div class="system-requirements">
+                <h3>Системные требования:</h3>
+                <strong>Операционная система:</strong>  {{ game.os_req }}<br>
+                <strong>Процессор:</strong>  {{ game.cpu_req }}<br>
+                <strong>Оперативная память:</strong>  {{ game.ram_req }}<br>
+                <strong>Видеокарта:</strong>  {{ game.gpu_req }}<br>
+                <strong>Место на диске:</strong>  {{ game.disk_req }}
+            </div>
+        </div>
+        
+        <div class="game-media">
+            {% if game.video_url %}
+                <div class="video">
+                    <video width="560" height="315" autoplay muted loop playsinline>
+                        <source src="{{ game.video_url.url }}" type="video/mp4">
+                    </video>
+                </div>
+            {% endif %}
+
+
+            {% if screenshots %}
+                <div class="game-screenshots">
+                    {% for screenshot in screenshots %}
+                        <a href="#" data-image="{{ screenshot.image.url }}" class="screenshot-link">  
+                            <img src="{{ screenshot.image.url }}" alt="{{ game.title }} screenshot" width="200" height="150">
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="comment-section">
+        {% if user.is_authenticated %}
+            <h3>Оставить комментарий</h3>
+            <form method="POST" class="comment-form">
+                {% csrf_token %}
+                <textarea name="comment" placeholder="Ваш комментарий..."></textarea>
+                <button class="submit-button">Отправить</button>
+            </form>
+        {% endif %}
+
+        <h3>Комментарии</h3>
+        <div class="comments-list">
+            {% for comment in comments %}
+                <p>
+                    <strong>{{ comment.author }}:</strong>
+                    {{ comment.content }}
+                    <span class="comment-date">({{ comment.created_at }})</span>
+                </p>
+            {% empty %}
+                <p>Комментариев пока нет.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal" id="screenshotModal">
+        <span class="close">×</span>
+        <div class="modal-content"> 
+            <img src="" id="modalImage" alt="">
+        </div>
+    </div>
+
+    {% block script %} 
+    <script>
+        // Получаем ссылку на модаль
+        var modal = document.getElementById("screenshotModal");
+        // Получаем ссылку на кнопку закрытия модаля
+        var span = document.getElementsByClassName("close")[0];
+        // Обработчик клика по кнопке закрытия
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // Обработчик клика по области вне модаля
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        // Обработчик клика по ссылкам на скриншоты
+        var screenshotLinks = document.querySelectorAll(".screenshot-link");
+        screenshotLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Получаем URL изображения из атрибута data-image
+                var imageUrl = this.dataset.image;
+                console.log("URL изображения:", imageUrl);
+                // Устанавливаем изображение в модальное окно
+                var modalImage = document.getElementById("modalImage");
+                modalImage.src = imageUrl;
+                // Изменяем размер изображения
+                modalImage.style.width = "1000px";
+                modalImage.style.height = "600px";
+                // Открываем модаль
+                modal.style.display = "block";
+            });
+        });
+    </script>
+    {% endblock %}
+
+{% endblock %}
+
+

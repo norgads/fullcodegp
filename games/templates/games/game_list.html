@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="search-container">
+        <form method="get">
+            <input type="text" name="q" id="search-input" placeholder="Введите название игры...">
+            <button class="submit-button">Поиск</button>
+        </form>
+    </div>
+
+    {% if games %}
+        <div class="game-grid">
+            {% for game in games %}
+                <a href="{% url 'game_detail' game.id %}" class="game-card">
+                    <img class="game-image" src="{{ game.image.url }}" alt="{{ game.title }} cover">
+                    <div class="game-title">{{ game.title }}</div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-results-wrapper">
+            <p class="no-results">
+                К сожалению, по вашему запросу ничего не найдено
+            </p>
+        </div>
+    {% endif %}
+{% endblock %}

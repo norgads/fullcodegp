@@ -1,0 +1,40 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GamePoisk - Portal</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+</head>
+<body>
+   <header class="header">
+        <div class="logo">
+            <a href="{% url 'game_list' %}">GamePoisk</a>
+        </div>
+        <div class="auth-buttons">
+            {% if user.is_authenticated %}
+            <div class="user-profile">
+                <button class="profile-button" id="profile-button">
+                    Добро пожаловать, {{ user.username }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'profile' %}">Профиль</a></li>
+                    <li><a href="{% url 'logout' %}">Выход</a></li>
+                </ul>
+            </div>
+            {% else %}
+                <a href="{% url 'login' %}"><button>Вход</button></a>
+                <a href="{% url 'register' %}"><button>Регистрация</button></a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+    <footer>
+        <p>Copyright &copy; 2024 Official site | GamePoisk</p>
+    </footer>
+</body>
+</html>
+
+

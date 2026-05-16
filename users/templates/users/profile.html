@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="profile-container">
+        <div class="profile-info">
+            <img src="{{ user.avatar.url }}" alt="Аватар" class="profile-avatar">
+            <h2>Мои данные</h2>
+            <ul>
+                <li><strong>Имя пользователя:</strong> {{ user.username }}</li>
+                <li><strong>Почта:</strong> {{ user.email }}</li>
+                <li><strong>Дата регистрация:</strong> {{ user.date_joined }}</li>
+                <li><strong>Последний визит:</strong> {{ user.last_visit }}</li>
+                <li><strong>Кол-во комментариев:</strong> {{ user.comment_count }}</li>
+                <li><strong>О себе:</strong> {{ user.bio }}</li>
+            </ul>
+        </div>
+        <a class="edit-button" href="{% url 'user_library' %}">Моя библиотека</a>
+        <input type="checkbox" id="toggle-form" class="toggle-checkbox">
+        <label for="toggle-form" class="edit-button">Изменить данные</label>
+
+        <div class="profile-edit-form">
+            <h2>Изменить данные</h2>
+            <form method="POST" enctype="multipart/form-data" class="styled-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Имя пользователя:</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="bio">О себе:</label>
+                    {{ form.bio }}
+                </div>
+                <button type="submit" class="submit-button">Сохранить изменения</button>
+            </form>
+        </div>
+        <div>
+            <h2>Мои комментарии</h2>
+            <ul>
+                {% for comment in comments %}
+                    <li>
+                        <p><strong>Игра:</strong> <a href="{% url 'game_detail' comment.game.id %}">{{ comment.game.title }}</a></p>
+                        <p>{{ comment.content }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
